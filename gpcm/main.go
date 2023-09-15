@@ -5,15 +5,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/logrusorgru/aurora/v3"
 	"io"
 	"log"
 	"net"
 	"os"
 	"time"
 	"wwfc/common"
-
-	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/logrusorgru/aurora/v3"
 )
 
 var (
@@ -121,7 +120,6 @@ func handleRequest(conn net.Conn) {
 				break
 			case "getprofile":
 				payload := getProfile(pool, ctx, command)
-				fmt.Println(payload)
 				conn.Write([]byte(payload))
 				break
 			}
