@@ -2,61 +2,69 @@ package api
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
-	"net/url"
 	"strconv"
 	"wwfc/database"
 	"wwfc/gpcm"
 )
 
 func HandleKick(w http.ResponseWriter, r *http.Request) {
-	errorString, ip := handleKickImpl(w, r)
-	if errorString != "" {
-		jsonData, _ := json.Marshal(map[string]string{"error": errorString})
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Content-Length", strconv.Itoa(len(jsonData)))
-		w.Write(jsonData)
+	var jsonData map[string]string
+	var statusCode int
+
+	switch r.Method {
+	case http.MethodHead:
+		statusCode = http.StatusOK
+	case http.MethodPost:
+		jsonData, statusCode = handleKickImpl(w, r)
+	default:
+		jsonData = mmss("error", "Incorrect request. POST or HEAD only.")
+		statusCode = http.StatusBadRequest
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if len(jsonData) == 0 {
+		w.WriteHeader(statusCode)
 	} else {
-		jsonData, _ := json.Marshal(map[string]string{"success": "true", "ip": ip})
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Content-Length", strconv.Itoa(len(jsonData)))
-		w.Write(jsonData)
+		json, _ := json.Marshal(jsonData)
+		w.Header().Set("Content-Length", strconv.Itoa(len(json)))
+		w.WriteHeader(statusCode)
+		w.Write(json)
 	}
 }
 
-func handleKickImpl(w http.ResponseWriter, r *http.Request) (string, string) {
+type KickRequestSpec struct {
+	Secret string
+	Pid    uint32
+}
+
+func handleKickImpl(w http.ResponseWriter, r *http.Request) (map[string]string, int) {
 	// TODO: Actual authentication rather than a fixed secret
-	// TODO: Use POST instead of GET
 
-	u, err := url.Parse(r.URL.String())
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return "Bad request", ""
+		return mmss("error", "Unable to read request body"), http.StatusBadRequest
 	}
 
-	query, err := url.ParseQuery(u.RawQuery)
+	var req KickRequestSpec
+	err = json.Unmarshal(body, &req)
 	if err != nil {
-		return "Bad request", ""
+		return mmss("error", err.Error()), http.StatusBadRequest
 	}
 
-	if apiSecret == "" || query.Get("secret") != apiSecret {
-		return "Invalid API secret", ""
+	if apiSecret == "" || req.Secret != apiSecret {
+		return mmss("error", "Invalid API secret in request"), http.StatusUnauthorized
 	}
 
-	pidStr := query.Get("pid")
-	if pidStr == "" {
-		return "Missing pid in request", ""
+	if req.Pid == 0 {
+		return mmss("error", "pid missing or 0 in request"), http.StatusBadRequest
 	}
 
-	pid, err := strconv.ParseUint(pidStr, 10, 32)
-	if err != nil {
-		return "Invalid pid", ""
-	}
+	gpcm.KickPlayer(req.Pid, "moderator_kick")
 
-	gpcm.KickPlayer(uint32(pid), "moderator_kick")
-
-	ip := database.GetUserIP(pool, ctx, uint32(pid))
-
-	return "", ip
+	ip := database.GetUserIP(pool, ctx, req.Pid)
+	return mmss("status", "success", "ip", ip), http.StatusOK
 }
