@@ -13,7 +13,7 @@ RUN apk add --no-cache ca-certificates && addgroup -S app && adduser -S -G app a
 WORKDIR /app
 COPY --from=build /out/wwfc /usr/local/bin/wwfc
 COPY --chown=app:app config.template.xml entrypoint.sh game_list.tsv motd.txt filter ./
-RUN chmod +x entrypoint.sh && mkdir -p /app/logs && chown app:app /app/logs
+RUN chmod +x entrypoint.sh && mkdir -p /app/logs && chown -R app:app /app
 USER app
 # GameSpy: 28910 29900 29901 29920 tcp, 27900 27901 udp. NAS HTTP: WFC_NAS_PORT (plain HTTP, behind Traefik).
 ENTRYPOINT ["/app/entrypoint.sh"]
