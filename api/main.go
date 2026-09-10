@@ -39,4 +39,5 @@ func RegisterHandlers(mux *http.ServeMux) {
 	mux.HandleFunc("/api/unban", HandleUnban)
 	mux.HandleFunc("/api/kick", HandleKick)
 	mux.HandleFunc("/api/baninfo", HandleBanInfo)
+	mux.HandleFunc("/api/profile", HandleProfile)
 }

@@ -24,3 +24,12 @@ You will need:
 2. Use the `schema.sql` found in the root of this repo and import it into your PostgreSQL database.
 3. Copy `config-example.xml` to `config.xml` and insert all the correct data.
 4. Run `go build`. The resulting executable `wwfc` is the executable of the server.
+
+## Linking a Wii or DS to an OpenPak account
+
+WFC has no login: a console gets a server-issued user id on first contact and every game
+profile hangs off it. Linking therefore happens on openpak.org, not on the console: the
+player types a friend code from any game, the website asks this server
+`GET /api/profile?fc=…&secret=…` (secret = `WFC_API_SECRET`), and links the returned
+`user_id` to the account in the core under the `wfc` namespace. Nothing is stored here; the
+core owns the link, and an unlinked console keeps playing as before.
