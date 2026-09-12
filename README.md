@@ -33,3 +33,19 @@ player types a friend code from any game, the website asks this server
 `GET /api/profile?fc=…&secret=…` (secret = `WFC_API_SECRET`), and links the returned
 `user_id` to the account in the core under the `wfc` namespace. Nothing is stored here; the
 core owns the link, and an unlinked console keeps playing as before.
+
+## The core bridge (`corebridge`, universal-social translator)
+
+When `WFC_CORE_ADDRESS` (and `WFC_CORE_KEY`, the core's `X-API-Key`) are set, the backend
+polls the account core's event stream every 30 seconds and keeps its position in a
+`core_events_cursor` table in the same Postgres database. What it does with each social
+event — `friend_requested`, `friend_accepted`, `friend_removed`, presence, invitations,
+chat — is deliver it nowhere and log the drop: WFC has no push of any kind, so there is no
+transport to deliver with. The bridge exists so the family is honestly part of the universal
+model, and so the model can prove it needs no special case for a family that receives
+nothing (prds/platform-wii-ds-prd.md WD-2). Run without `WFC_CORE_ADDRESS`, nothing
+changes.
+
+Regression checks for the console-facing surface (NAS auth form and reply encoding, DLS1 DLC
+counts, host routing, SAKE identity checks, gamestats token and `get2.asp` framing) run with
+`go test ./...`; they need no database, only the repository root as working directory.
