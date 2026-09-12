@@ -27,6 +27,8 @@
      <logLevel>@LOG_LEVEL@</logLevel>
      <logOutput>StdOut</logOutput>
      <apiSecret>@API_SECRET@</apiSecret>
+     <coreAddress>@CORE_ADDRESS@</coreAddress>
+     <coreKey>@CORE_KEY@</coreKey>
      <eventReporting>
           <logToDatabase>true</logToDatabase>
      </eventReporting>

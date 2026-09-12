@@ -44,6 +44,11 @@ type Config struct {
 
 	APISecret string `xml:"apiSecret"`
 
+	// The OpenPak account core (universal-social translator, WD-2). Empty
+	// address: the family has no core connection and nothing else changes.
+	CoreAddress string `xml:"coreAddress"`
+	CoreKey     string `xml:"coreKey"`
+
 	AllowDefaultDolphinKeys     bool   `xml:"allowDefaultDolphinKeys"`
 	AllowMultipleDeviceIDs      string `xml:"allowMultipleDeviceIDs"`
 	AllowConnectWithoutDeviceID bool   `xml:"allowConnectWithoutDeviceID"`

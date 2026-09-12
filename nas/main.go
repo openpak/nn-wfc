@@ -123,15 +123,24 @@ func Shutdown() {
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
-	// Check for host-specific muxes
-	for regex, mux := range hostMuxes {
-		if regex.MatchString(r.Host) {
-			mux.ServeHTTP(w, r)
-			return
-		}
+	if mux := muxForHost(r.Host); mux != nil {
+		mux.ServeHTTP(w, r)
+		return
 	}
 
 	http.DefaultServeMux.ServeHTTP(w, r)
+}
+
+// muxForHost picks the handler for a Host header — the routing every console
+// request arrives through, since Traefik forwards on the name the console
+// resolved. nil means the default mux (conntest, the API, unknown hosts).
+func muxForHost(host string) *http.ServeMux {
+	for regex, mux := range hostMuxes {
+		if regex.MatchString(host) {
+			return mux
+		}
+	}
+	return nil
 }
 
 func getModuleName(r *http.Request) string {

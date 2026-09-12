@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/rpc"
@@ -16,6 +17,7 @@ import (
 	"time"
 	"wwfc/api"
 	"wwfc/common"
+	"wwfc/corebridge"
 	"wwfc/database"
 	"wwfc/gamestats"
 	"wwfc/gpcm"
@@ -127,6 +129,12 @@ func backendMain(noSignal, noReload bool) {
 
 	// Wait for all servers to start
 	wg.Wait()
+
+	// The universal-social translator (WD-2): watch the core's social events
+	// and deliver nowhere — WFC has no push. Started after the servers so a
+	// bridge problem can never hold the console-facing services hostage.
+	dsn := fmt.Sprintf("postgres://%s:%s@%s/%s", config.Username, config.Password, config.DatabaseAddress, config.DatabaseName)
+	corebridge.Start(config.CoreAddress, config.CoreKey, dsn)
 
 	// Log via event that the backend has started
 	go connectAndLogEvent("backend_started")
