@@ -34,6 +34,15 @@ player types a friend code from any game, the website asks this server
 `user_id` to the account in the core under the `wfc` namespace. Nothing is stored here; the
 core owns the link, and an unlinked console keeps playing as before.
 
+## OpenPak bans
+
+A Wii or DS linked to an OpenPak account that is banned in the admin is refused at GPCM login
+with WiiLink's ban message (22002) and kicked within a minute if already online. The server asks
+the website's `GET /internal/bans?namespace=wfc&subject=<console user id>`
+([`website/docs/ban-lookup.md`](../website/docs/ban-lookup.md)); set `WEBSITE_INTERNAL_URL`
+(`http://website:20010` on the box) and `WEBSITE_INTERNAL_KEY` to turn it on. Unlinked
+consoles are not OpenPak accounts and are never refused; a lookup outage lets logins through.
+
 ## The core bridge (`corebridge`, universal-social translator)
 
 When `WFC_CORE_ADDRESS` (and `WFC_CORE_KEY`, the core's `X-API-Key`) are set, the backend

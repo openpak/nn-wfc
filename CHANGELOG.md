@@ -8,6 +8,15 @@ OpenPak work starts at the port/fork commit.
 
 ## Unreleased
 
+- OpenPak bans (website/docs/ban-lookup.md): a Wii or DS linked to a banned OpenPak account is
+  refused at GPCM login with WiiLink's own ban message (error 22002, the path WiiLink uses for
+  its profile bans), and a logged-in session whose account becomes banned is kicked within a
+  minute with the "You have been banned" message (22002). The website's
+  `GET /internal/bans?namespace=wfc&subject=<console user id>` is asked; an unlinked console is
+  not an OpenPak account and keeps playing, and a lookup outage lets logins through (the next
+  sweep catches them). New environment variables `WEBSITE_INTERNAL_URL` and
+  `WEBSITE_INTERNAL_KEY`; the gate is off unless both are set.
+
 - WD-2 + WD-3: the no-transport translator and C10 regression checks [98d0acd]
 
 

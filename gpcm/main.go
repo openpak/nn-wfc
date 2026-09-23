@@ -79,6 +79,8 @@ func StartServer(reload bool) {
 
 	allowDefaultDolphinKeys = config.AllowDefaultDolphinKeys
 
+	go watchBans() // OpenPak account bans; a no-op without WEBSITE_INTERNAL_URL/KEY
+
 	if reload {
 		err := loadState()
 		if err != nil {
