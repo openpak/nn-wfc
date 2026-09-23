@@ -508,6 +508,10 @@ func (g *GameSpySession) verifyExLoginInfo(command common.GameSpyCommand, authTo
 }
 
 func (g *GameSpySession) performLoginWithDatabase(userId uint64, gsbrCode string, profileId uint32, defaultKey bool, deviceId uint32, deviceAuth bool) bool {
+	if g.refuseIfBanned(userId) {
+		return false
+	}
+
 	// Get IP address without port
 	ipAddress := g.RemoteAddr
 	if strings.Contains(ipAddress, ":") {
