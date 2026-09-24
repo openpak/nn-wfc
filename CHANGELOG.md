@@ -8,6 +8,10 @@ OpenPak work starts at the port/fork commit.
 
 ## Unreleased
 
+- ci: build only on v*.*.* tags [8631ca4]; docs commits
+
+## v0.2.0 — 2026-09-23
+
 - OpenPak bans (website/docs/ban-lookup.md): a Wii or DS linked to a banned OpenPak account is
   refused at GPCM login with WiiLink's own ban message (error 22002, the path WiiLink uses for
   its profile bans), and a logged-in session whose account becomes banned is kicked within a
@@ -19,14 +23,18 @@ OpenPak work starts at the port/fork commit.
 
 - WD-2 + WD-3: the no-transport translator and C10 regression checks [98d0acd]
 
+## v0.1.3 — 2026-09-10
+
+- api: `/api/profile` resolves a friend code to its profile and user id [1752ea9]
 
 ## v0.1.2 — 2026-09-10
 
-
+- Image: the app user owns /app so the entrypoint can render config.xml [86d8991]
 
 ## v0.1.1 — 2026-09-10
 
-
+- Track the entrypoint and config template (upstream's .gitignore hid them) [c513d2e];
+  drop upstream's lint/build workflows [e2a1688]
 
 ## v0.1.0 — 2026-09-10
 
