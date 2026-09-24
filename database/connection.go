@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"wwfc/common"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Connection struct {
@@ -24,8 +24,12 @@ func Start(config common.Config) Connection {
 		panic(err)
 	}
 
-	conn.pool, err = pgxpool.ConnectConfig(conn.ctx, dbConf)
+	conn.pool, err = pgxpool.NewWithConfig(conn.ctx, dbConf)
 	if err != nil {
+		panic(err)
+	}
+	// pgx v5 pools connect lazily; v4 connected here. Keep failing at start-up on a bad database.
+	if err := conn.pool.Ping(conn.ctx); err != nil {
 		panic(err)
 	}
 
