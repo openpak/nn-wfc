@@ -6,8 +6,10 @@ of truth; this file is the readable summary.
 Note: the early history below is the upstream project (WiiLink's Wii WFC server);
 OpenPak work starts at the port/fork commit.
 
-## Unreleased
+## v0.2.1 — 2026-09-24
 
+- deps: pgx v4 to v5 (v4 is end of life; its SQL-injection and pgproto3 DoS advisories are fixed only in v5); pools ping at start so a bad database still fails fast
+- deps: grpc 1.83.2, x/crypto 0.55, x/net 0.57 (Dependabot)
 - ci: build only on v*.*.* tags [8631ca4]; docs commits
 
 ## v0.2.0 — 2026-09-23
