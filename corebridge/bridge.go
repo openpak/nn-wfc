@@ -17,7 +17,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
@@ -61,9 +61,15 @@ func Start(coreAddress, coreKey, dsn string) *Bridge {
 	if coreAddress == "" || dsn == "" {
 		return nil
 	}
-	pool, err := pgxpool.Connect(context.Background(), dsn)
+	pool, err := pgxpool.New(context.Background(), dsn)
+	if err == nil {
+		err = pool.Ping(context.Background()) // v5 connects lazily; v4 failed here on a bad DSN
+	}
 	if err != nil {
 		logging.Error("COREBRIDGE", "database:", err)
+		if pool != nil {
+			pool.Close()
+		}
 		return nil
 	}
 	conn, err := grpc.NewClient(coreAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
