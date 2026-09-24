@@ -6,7 +6,7 @@ import (
 	"strings"
 	"wwfc/filter"
 
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type expression struct {
