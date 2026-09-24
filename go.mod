@@ -5,15 +5,15 @@ go 1.25.0
 require (
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/logrusorgru/aurora/v3 v3.0.0
-	google.golang.org/grpc v1.82.1
+	google.golang.org/grpc v1.84.0
 	google.golang.org/protobuf v1.36.11
 	gvisor.dev/gvisor v0.0.0-20250512220230-2268d0cbb0f5
 )
 
 require (
-	golang.org/x/net v0.53.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260414002931-afd174a4e478 // indirect
+	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260706201446-f0a921348800 // indirect
 )
 
 require (
@@ -28,6 +28,6 @@ require (
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/linkdata/deadlock v0.5.5
 	github.com/petermattis/goid v0.0.0-20250813065127-a731cc31b4fe // indirect
-	golang.org/x/crypto v0.50.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/crypto v0.55.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
 )
