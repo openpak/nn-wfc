@@ -8,7 +8,7 @@ console-specific was changed; OpenPak adds the container and its configuration t
 Ports: 28910, 29900, 29901, 29920 TCP and 27900, 27901 UDP on the host; NAS is plain HTTP on
 `WFC_NAS_PORT` behind Traefik's port-80 router for `nas`, `naswii`, `dls1`, `sake`,
 `gamestats` and `race` names. Consoles reach it through their DNS setting
-([`nn-sssl-dns`](../nn-sssl-dns)); no CFW is needed on a Wii or DS. Image:
+([`nn-sssl-dns`](../../../wiiu-3ds/infra/nn-sssl-dns)); no CFW is needed on a Wii or DS. Image:
 `ghcr.io/openpak/nn-wfc` on tag. Not yet console-verified.
 
 ---
@@ -39,7 +39,7 @@ core owns the link, and an unlinked console keeps playing as before.
 A Wii or DS linked to an OpenPak account that is banned in the admin is refused at GPCM login
 with WiiLink's ban message (22002) and kicked within a minute if already online. The server asks
 the website's `GET /internal/bans?namespace=wfc&subject=<console user id>`
-([`website/docs/ban-lookup.md`](../website/docs/ban-lookup.md)); set `WEBSITE_INTERNAL_URL`
+([`website/docs/ban-lookup.md`](../../../../platforms/core/infra/website/docs/ban-lookup.md)); set `WEBSITE_INTERNAL_URL`
 (`http://website:20010` on the box) and `WEBSITE_INTERNAL_KEY` to turn it on. Unlinked
 consoles are not OpenPak accounts and are never refused; a lookup outage lets logins through.
 
