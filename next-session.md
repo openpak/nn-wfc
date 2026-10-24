@@ -33,7 +33,7 @@ only, docs.
 - v0.2.0 bans: the website's `/internal/bans?namespace=wfc` is asked at
   GPCM login and by a sweep; gate off unless both `WEBSITE_INTERNAL_*` set.
 - Not console-verified. The DS needs only its DNS setting; the Wii client
-  is ../../clients/nn-wfc-patcher-wii.
+  is ../../clients/wii-patcher.
 - 2026-09-15 docs pass committed: `CHANGELOG.md`, `docs/`, `prds/` stubs.
 
 ## Next steps
