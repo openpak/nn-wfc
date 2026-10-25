@@ -9,13 +9,13 @@ profanity.txt
 *.bat
 
 # Logs
-logs
+/logs/
 
 # Payload data
-payload
+/payload/
 
 # Reload state
-state
+/state/
 
 # Executables
 *.exe
@@ -23,3 +23,6 @@ state
 
 # Editor files
 .vscode
+
+# Dependencies must be complete in clean release checkouts.
+!vendor/**
