@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/subtle"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -39,8 +40,15 @@ func Proxy(raw, key string) (http.Handler, error) {
 	p.Director = func(r *http.Request) { director(r); r.Header.Set("X-WFC-Internal-Key", key) }
 	tr := http.DefaultTransport.(*http.Transport).Clone()
 	tr.ResponseHeaderTimeout = 10 * time.Second
+	// Legacy NAS wraps sockets in an io.Pipe and closes responses independently
+	// of standard HTTP idle pooling. Use a fresh internal hop so a POST is never
+	// handed a stale connection after a NAS idle timeout or independent restart.
+	tr.DisableKeepAlives = true
 	p.Transport = tr
-	p.ErrorHandler = func(w http.ResponseWriter, r *http.Request, e error) { http.Error(w, "service unavailable", 503) }
+	p.ErrorHandler = func(w http.ResponseWriter, r *http.Request, e error) {
+		log.Printf("WFC upstream %s failed: %v", u.Host, e)
+		http.Error(w, "service unavailable", 503)
+	}
 	return p, nil
 }
 func Server(addr string, h http.Handler) *http.Server {
