@@ -59,3 +59,30 @@ Rollback stops NAS/content, restores original runtime image/unit and HTTP routin
 old process-random tokens require another reconnect. Database schema is unchanged.
 
 Console/gameplay verification is separate from automated protocol checks.
+
+## Production validation (2026-10-25)
+
+Deployed releases: nn-wfc 0.3.2, wfc-nas 0.1.2 and wfc-content 0.1.0.
+All release images are published for amd64 and arm64. The runtime retains its
+existing public ports and private address. NAS owns the existing payload volume;
+no database migration or profile export/import was required.
+
+Offline tests/vet and ARM64 builds passed from isolated source contexts. Release
+CI uses clean checkouts with vendor mode. Native NAS login produces a ticket
+verified by an independent process using the shared key. Live checks cover SAKE
+SOAP error framing, gamestats token framing, API authorization and direct private
+listener rejection without transport credentials. A GameSpy challenge/keepalive
+socket remains connected through separate NAS and content restarts, with the same
+runtime container ID. Public NAS and the four GameSpy TCP listeners were checked, along with QR2
+availability and NATNEG pre-init over both public UDP ports.
+
+Internal forwarding uses fresh HTTP connections to avoid handing a streamed POST
+a stale connection after legacy NAS idle/close behavior or a service restart.
+This affects only short internal HTTP hops; persistent game sockets remain in
+the runtime. No console gameplay, matchmaking session or positive SAKE record
+write is claimed by these checks.
+
+Rollback retains the exact old image, original unit and database dump on the
+operator's server. Restore the original combined runtime unit and stop the two
+new services; no schema reversal is needed. Keep the shared key and environment
+files private. Console trust and external proxy configuration are unchanged.
