@@ -1,88 +1,94 @@
-# Wii/DS service split
+# Wii/DS: one protocol service per repository
 
-The first extraction separates independently releasable HTTP services from the
-stateful gameplay runtime. Each is its own repository, binary and image:
+The initial grouped extraction is superseded by the full split. Each protocol
+has its own Git repository, executable, image, CI checks and release tag:
 
-- nn-wfc: GPCM/GPSP, QR2, NATNEG, server browser, gamestats, internal moderation/
-  profile APIs and the core-event bridge. Keeps the frontend/backend reload mechanism.
-- wfc-nas: NAS authentication, DLS1 downloads and the existing HTTP front door.
-- wfc-content: SAKE storage and Nintendo race/leaderboard HTTP routes.
-- wfc-common: shared protocol, database and authenticated transport module.
+- wfc-nas: native NAS authentication and the console HTTP routing front door.
+- wfc-dls: DLS1 downloads and DLC counts.
+- wfc-gpcm: GameSpy login, player sessions, friends and presence (TCP 29900).
+- wfc-gpsp: player search/otherslist (TCP 29901).
+- wfc-serverbrowser: server queries and messages (TCP 28910).
+- wfc-qr2: registration, heartbeat, server directory and room state (UDP 27900).
+- wfc-natneg: NAT negotiation sessions (UDP 27901).
+- wfc-gamestats: statistics TCP 29920 and native HTTP statistics protocol.
+- wfc-sake: storage/file HTTP protocol.
+- wfc-race: Nintendo race/leaderboard SOAP protocol.
+- wfc-api: operator profile/moderation/statistics API and core-event translator.
+- wfc-common: shared Go wire types, codecs, API clients and legacy database helpers.
 
-GPCM and QR2 have bidirectional live-state operations and error callbacks;
-server browser/NATNEG share QR2 state; gamestats imports GPCM protocol handling.
-These remain one runtime deliberately. Splitting them further requires a versioned
-session/matchmaking contract and explicit recovery semantics, not package copying.
-DLS1 shares the NAS form codec and stays with NAS. No Wii-versus-DS duplication.
+nn-wfc is a routing-only HTTP compatibility gateway on its original private
+address/port. wfc-content is a routing-only compatibility gateway for old content
+URLs. Neither launches protocol implementations or hosts public game sockets.
+Every new repository has topics openpak/infra/wii/ds; the shared module adds library.
+Services use normal vX.Y.Z tags and publish independent multiarch images.
 
-## Contracts and compatibility
+## State ownership and authenticated contracts
 
-The existing database/schema, profile IDs, friend codes, moderation and event cursor
-are preserved. Shared database helpers are compatibility code, not a new identity
-owner. Keep the existing database and payload volume. No database migration is added.
+GPCM alone owns authenticated player sessions and session-key/game verification.
+GPSP calls it over /internal/v1/gpcm/verify; an outage or mismatched key/game fails
+verification. Each TCP service retains its own in-container loopback frontend/
+backend reload transport, scoped to that protocol. No net/rpc listener crosses
+containers or is published externally.
 
-Previously tokens used process-random keys. All processes now load the same
-operator-created binary WFC_TOKEN_KEY_FILE (>=32 bytes) and derive separate NAS and
-login-ticket keys/IVs/magic. Native wire formats and lifetimes are unchanged.
-Initial migration invalidates old process-random tokens just like an old backend
-restart did; consoles must reconnect once. Subsequent auth/content deployments do
-not end runtime sockets or invalidate shared-key tokens. Do not rotate this key
-as part of normal deployment.
+QR2 alone owns the server directory, room state and registration socket. Browser,
+NATNEG, GPCM and operator API use /internal/v1/qr2/* operations. Requests use the
+shared WFC_INTERNAL_KEY, bounded HTTP timeouts and bounded JSON bodies. Public
+native paths never expose these internal routes. GPCM mutations carry a session
+generation; QR2 rejects stale generations, and logout cannot remove a replacement
+login. QR2 callbacks are queued outside room locks, retried with bounded attempts,
+and checked against the current generation by GPCM before a connection is kicked.
+No synchronous GPCM->QR2->GPCM lock cycle is introduced.
 
-NAS is the existing HTTP entry point. It forwards SAKE/race hosts to
-WFC_CONTENT_URL and gamestats/API routes to WFC_RUNTIME_URL, preserving hostname,
-path/query, method and body. It overwrites X-WFC-Internal-Key with WFC_INTERNAL_KEY;
-private owners require it. Internal outages return 503, without local fallback.
-Existing API-secret checks remain in addition to transport authentication.
+QR2 reconciles GPCM session snapshots every five seconds. Same-generation refresh
+preserves room pointers; newer generations replace old projections. Missing
+sessions are removed after an authoritative snapshot, with protection for logins
+created while that snapshot was in flight. A 30-second lease bounds stale login
+projections during authority outages; cleanup occurs on the next reconciliation
+pass. Logged-out generations are tombstoned against delayed snapshot resurrection.
+Directory queries fail with 503 when no recent GPCM snapshot exists. Browser
+closes a failed directory request instead of advertising a successful empty list.
 
-Internal defaults: NAS 20120, runtime HTTP 20121, content HTTP 20122. Keep the six
-existing public GameSpy TCP/UDP ports on nn-wfc. NAS owns the console HTTP surface. The runtime retains a compatibility HTTP
-forward on :20120 to WFC_NAS_URL, so existing proxy and website URLs keep working.
-It contains no auth/content implementation. Runtime's net/rpc frontend/backend transport remains loopback-only.
+A QR2 restart loses its own in-memory rooms/registrations. Active GPCM sessions
+are rehydrated from snapshots and consoles re-register through ordinary heartbeat/
+challenge. It does not close GPCM connections or interrupt already-direct peer
+traffic. A GPCM restart closes its own connections and expired projections are
+removed; it does not fabricate logged-in users from database records.
 
-## Build and deployment
+## HTTP, tokens and data
 
-Each service commits vendor/ with a sibling replace for wfc-common. CI tests and
-images build independently with GOWORK=off; refresh vendor in all consumers after
-shared changes. Each service has its own tag-triggered multiarch release workflow.
-Use example.env for non-secret configuration shape, supplying operator credentials.
-Never commit rendered config.xml, live environment files or token keys.
+NAS forwards each native hostname family to its actual owner; DLS1 is no longer
+implemented in NAS, SAKE/race no longer in wfc-content, and statistics/operator API
+no longer in nn-wfc. The old console proxy and website URLs keep working through
+thin gateways. Internal hops use fresh HTTP connections for legacy NAS framing
+compatibility. Database schema, profile IDs, friend codes, shared token key,
+operator API secrets and the existing payload/DLC assets are preserved.
 
-Before migration save original units, exact image IDs and a database dump. Pin the
-old runtime image before publishing latest so automatic updates cannot deploy a
-half-configured topology. Start content and NAS with the shared key, then replace
-the runtime and move existing HTTP routing to NAS. Preserve the payload volume.
-Validate NAS encoding, token verification across processes, direct GameSpy listeners,
-SAKE/race/gamestats paths, API transport auth and original host routing. Verify a
-runtime challenge connection remains open across independent NAS/content restarts.
-Rollback stops NAS/content, restores original runtime image/unit and HTTP routing;
-old process-random tokens require another reconnect. Database schema is unchanged.
+Shared code is vendored with sibling replace directives, so each repository
+builds and tests independently with GOWORK=off and -mod=vendor. Refresh vendor in
+all consumers after contract changes. No sibling service implementation is a
+production dependency. Library and service release tags identify independent
+versions; the library has no daemon/image.
 
-Console/gameplay verification is separate from automated protocol checks.
+## Migration, verification and rollback
 
-## Production validation (2026-10-25)
+Before publishing, save original Quadlets, exact images, environment/routing and
+a database dump. Start new owners on the internal network without public ports,
+verify authenticated internal APIs, then stop the old socket owner and publish
+each TCP/UDP port on its corresponding service. Retain the compatibility gateway
+at the old address. Dependencies use startup ordering without stop propagation.
+All units belong to the normal boot target.
 
-Deployed releases: nn-wfc 0.3.2, wfc-nas 0.1.2 and wfc-content 0.1.0.
-All release images are published for amd64 and arm64. The runtime retains its
-existing public ports and private address. NAS owns the existing payload volume;
-no database migration or profile export/import was required.
+The operator-generated shared token key is unchanged. The initial transfer ends
+connections owned by the grouped runtime; subsequent unrelated service releases
+leave GPCM connections intact. Rollback stops new socket owners, restores exact
+old images/units and the original runtime ports; the unchanged schema needs no
+reverse migration. Never put keys, live environment files or raw container inspect
+backups in public repositories.
 
-Offline tests/vet and ARM64 builds passed from isolated source contexts. Release
-CI uses clean checkouts with vendor mode. Native NAS login produces a ticket
-verified by an independent process using the shared key. Live checks cover SAKE
-SOAP error framing, gamestats token framing, API authorization and direct private
-listener rejection without transport credentials. A GameSpy challenge/keepalive
-socket remains connected through separate NAS and content restarts, with the same
-runtime container ID. Public NAS and the four GameSpy TCP listeners were checked, along with QR2
-availability and NATNEG pre-init over both public UDP ports.
-
-Internal forwarding uses fresh HTTP connections to avoid handing a streamed POST
-a stale connection after legacy NAS idle/close behavior or a service restart.
-This affects only short internal HTTP hops; persistent game sockets remain in
-the runtime. No console gameplay, matchmaking session or positive SAKE record
-write is claimed by these checks.
-
-Rollback retains the exact old image, original unit and database dump on the
-operator's server. Restore the original combined runtime unit and stop the two
-new services; no schema reversal is needed. Keep the shared key and environment
-files private. Console trust and external proxy configuration are unchanged.
+Validation includes generation/lease race tests and an isolated real-Postgres
+stack: native NAS->GPCM login, GPSP verification, QR2 heartbeat registration, live
+GPCM connection survival across all unrelated protocol restarts, QR2 restart
+rehydration and heartbeat recovery, stale callback/logout rejection, authority
+outage lease expiry and fail-closed directory queries. Isolated test identities
+are not production accounts. Real-console gameplay and multiplayer are separate
+checks and are not implied by transport/protocol probes.

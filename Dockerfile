@@ -11,5 +11,5 @@ COPY --from=build /out/wwfc /usr/local/bin/wwfc
 COPY --chown=app:app config.template.xml entrypoint.sh game_list.tsv motd.txt ./
 RUN chmod +x entrypoint.sh && mkdir -p /app/logs && chown -R app:app /app
 USER app
-EXPOSE 20121
+EXPOSE 20120
 ENTRYPOINT ["/app/entrypoint.sh"]
