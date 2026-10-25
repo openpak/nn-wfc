@@ -1,9 +1,9 @@
 package gpsp
 
 import (
-	"wwfc/common"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"wwfc/gpcm"
-	"wwfc/logging"
 )
 
 func replyError(moduleName string, connIndex uint64, gpErr gpcm.GPError) {

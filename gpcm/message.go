@@ -4,10 +4,10 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"strconv"
 	"strings"
-	"wwfc/common"
-	"wwfc/logging"
 	"wwfc/qr2"
 
 	"github.com/logrusorgru/aurora/v3"

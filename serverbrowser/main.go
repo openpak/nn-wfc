@@ -3,9 +3,9 @@ package serverbrowser
 import (
 	"encoding/binary"
 	"encoding/gob"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"os"
-	"wwfc/common"
-	"wwfc/logging"
 
 	"github.com/linkdata/deadlock"
 	"github.com/logrusorgru/aurora/v3"

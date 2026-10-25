@@ -2,10 +2,10 @@ package gamestats
 
 import (
 	"math/rand"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"strconv"
-	"wwfc/common"
 	"wwfc/gpcm"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

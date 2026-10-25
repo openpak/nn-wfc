@@ -1,6 +1,6 @@
 package gpcm
 
-import "wwfc/common"
+import "openpak/wfc-common/common"
 
 func kickPlayer(profileID uint32, reason string) {
 	if session, exists := sessions[profileID]; exists {

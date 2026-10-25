@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"wwfc/common"
+	"openpak/wfc-common/common"
 )
 
 // ProfileResponseSpec is what /api/profile returns: the profile a friend code names and the

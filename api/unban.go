@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-	"wwfc/logging"
+	"openpak/wfc-common/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

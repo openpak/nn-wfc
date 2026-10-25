@@ -1,3 +1,19 @@
+# OpenPak nn-wfc — Wii/DS session and matchmaking runtime
+
+NAS/authentication and content HTTP now run in independent wfc-nas and wfc-content
+services. See [service-split.md](docs/service-split.md) for ownership, contracts,
+configuration and migration. This image keeps GameSpy sockets, friends/presence,
+matchmaking, statistics, internal APIs and its frontend/backend reload mechanism.
+Shared code is vendored from wfc-common; standalone tests use GOWORK=off.
+
+Required in addition to existing WFC database/API configuration:
+WFC_TOKEN_KEY_FILE (operator binary key >=32 bytes, shared by all services),
+WFC_INTERNAL_KEY (>=32 bytes). Internal HTTP defaults to WFC_HTTP_ADDR=:20121.
+The console HTTP proxy must target wfc-nas:20120, not this listener.
+
+The following upstream notes describe protocol behavior; the combined-process
+launch instructions predate this split.
+
 # OpenPak nn-wfc — Nintendo WFC for Wii and DS
 
 Fork of WiiLink's `wfc-server` (AGPL-3.0): NAS authentication, GameSpy GPCM/GPSP,

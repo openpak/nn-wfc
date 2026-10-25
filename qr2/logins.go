@@ -2,9 +2,9 @@ package qr2
 
 import (
 	"encoding/gob"
+	"openpak/wfc-common/common"
 	"os"
 	"strconv"
-	"wwfc/common"
 )
 
 type LoginInfo struct {

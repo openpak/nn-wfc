@@ -6,12 +6,12 @@ import (
 	"encoding/gob"
 	"fmt"
 	"net"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"os"
 	"sync"
 	"sync/atomic"
 	"time"
-	"wwfc/common"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

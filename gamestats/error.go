@@ -1,9 +1,9 @@
 package gamestats
 
 import (
-	"wwfc/common"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"wwfc/gpcm"
-	"wwfc/logging"
 )
 
 func (g *GameStatsSession) replyError(gpErr gpcm.GPError) {

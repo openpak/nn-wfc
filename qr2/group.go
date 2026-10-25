@@ -5,12 +5,12 @@ import (
 	"encoding/binary"
 	"encoding/gob"
 	"fmt"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"os"
 	"strconv"
 	"strings"
 	"time"
-	"wwfc/common"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

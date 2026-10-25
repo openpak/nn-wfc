@@ -2,8 +2,8 @@ package api
 
 import (
 	"net/http"
-	"wwfc/common"
-	"wwfc/database"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/database"
 )
 
 var (

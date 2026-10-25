@@ -2,8 +2,8 @@ package api
 
 import (
 	"net/http"
+	"openpak/wfc-common/logging"
 	"wwfc/gpcm"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

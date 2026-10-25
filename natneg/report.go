@@ -3,7 +3,7 @@ package natneg
 import (
 	"fmt"
 	"net"
-	"wwfc/logging"
+	"openpak/wfc-common/logging"
 	"wwfc/qr2"
 
 	"github.com/logrusorgru/aurora/v3"

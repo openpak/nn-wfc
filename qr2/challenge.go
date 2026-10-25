@@ -3,11 +3,11 @@ package qr2
 import (
 	"fmt"
 	"net"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"strconv"
 	"strings"
 	"time"
-	"wwfc/common"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

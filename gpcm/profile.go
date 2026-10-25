@@ -1,10 +1,10 @@
 package gpcm
 
 import (
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/database"
+	"openpak/wfc-common/logging"
 	"strconv"
-	"wwfc/common"
-	"wwfc/database"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

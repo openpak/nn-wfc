@@ -3,12 +3,12 @@ package qr2
 import (
 	"encoding/binary"
 	"net"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/database"
+	"openpak/wfc-common/logging"
 	"sync"
 	"sync/atomic"
 	"time"
-	"wwfc/common"
-	"wwfc/database"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

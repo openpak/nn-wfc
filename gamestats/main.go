@@ -2,12 +2,12 @@ package gamestats
 
 import (
 	"encoding/gob"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/database"
+	"openpak/wfc-common/logging"
 	"os"
 	"strings"
-	"wwfc/common"
-	"wwfc/database"
 	"wwfc/gpcm"
-	"wwfc/logging"
 
 	"github.com/linkdata/deadlock"
 	"github.com/logrusorgru/aurora/v3"

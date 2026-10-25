@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"wwfc/logging"
+	"openpak/wfc-common/logging"
 )
 
 const (

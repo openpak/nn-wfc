@@ -1,8 +1,8 @@
 package serverbrowser
 
 import (
-	"wwfc/filter"
-	"wwfc/logging"
+	"openpak/wfc-common/filter"
+	"openpak/wfc-common/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

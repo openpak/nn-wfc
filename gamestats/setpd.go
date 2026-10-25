@@ -1,11 +1,11 @@
 package gamestats
 
 import (
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"strconv"
 	"strings"
 	"time"
-	"wwfc/common"
-	"wwfc/logging"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/logrusorgru/aurora/v3"

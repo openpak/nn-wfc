@@ -2,10 +2,10 @@ package gpcm
 
 import (
 	"fmt"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"strconv"
 	"unicode/utf16"
-	"wwfc/common"
-	"wwfc/logging"
 )
 
 const (

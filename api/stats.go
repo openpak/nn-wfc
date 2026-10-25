@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-	"wwfc/common"
+	"openpak/wfc-common/common"
 	"wwfc/qr2"
 )
 

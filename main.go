@@ -6,6 +6,9 @@ import (
 	"io"
 	"net"
 	"net/rpc"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/database"
+	"openpak/wfc-common/logging"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -16,18 +19,12 @@ import (
 	"syscall"
 	"time"
 	"wwfc/api"
-	"wwfc/common"
 	"wwfc/corebridge"
-	"wwfc/database"
 	"wwfc/gamestats"
 	"wwfc/gpcm"
 	"wwfc/gpsp"
-	"wwfc/logging"
-	"wwfc/nas"
 	"wwfc/natneg"
 	"wwfc/qr2"
-	"wwfc/race"
-	"wwfc/sake"
 	"wwfc/serverbrowser"
 
 	"github.com/logrusorgru/aurora/v3"
@@ -38,6 +35,9 @@ var (
 )
 
 func main() {
+	if err := common.LoadTokenKey(); err != nil {
+		panic(err)
+	}
 	logging.SetLevel(*config.LogLevel)
 
 	args := os.Args[1:]
@@ -118,7 +118,7 @@ func backendMain(noSignal, noReload bool) {
 	common.ShouldNotError(err)
 
 	wg := &sync.WaitGroup{}
-	actions := []func(bool){nas.StartServer, gpcm.StartServer, qr2.StartServer, gpsp.StartServer, serverbrowser.StartServer, race.StartServer, sake.StartServer, natneg.StartServer, api.StartServer, gamestats.StartServer}
+	actions := []func(bool){startHTTP, gpcm.StartServer, qr2.StartServer, gpsp.StartServer, serverbrowser.StartServer, natneg.StartServer, api.StartServer, gamestats.StartServer}
 	wg.Add(len(actions))
 	for _, action := range actions {
 		go func(ac func(bool)) {
@@ -243,7 +243,7 @@ func (r *RPCPacket) Shutdown(stateUuid string, _ *struct{}) error {
 	}
 
 	wg := &sync.WaitGroup{}
-	actions := []func(){nas.Shutdown, gpcm.Shutdown, qr2.Shutdown, gpsp.Shutdown, serverbrowser.Shutdown, race.Shutdown, sake.Shutdown, natneg.Shutdown, api.Shutdown, gamestats.Shutdown}
+	actions := []func(){stopHTTP, gpcm.Shutdown, qr2.Shutdown, gpsp.Shutdown, serverbrowser.Shutdown, natneg.Shutdown, api.Shutdown, gamestats.Shutdown}
 	wg.Add(len(actions))
 	for _, action := range actions {
 		go func(ac func()) {

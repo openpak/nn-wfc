@@ -3,9 +3,9 @@ package natneg
 import (
 	"encoding/binary"
 	"net"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 	"time"
-	"wwfc/common"
-	"wwfc/logging"
 
 	"github.com/logrusorgru/aurora/v3"
 )

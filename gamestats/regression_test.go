@@ -13,10 +13,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"openpak/wfc-common/common"
 	"os"
 	"strings"
 	"testing"
-	"wwfc/common"
 )
 
 // The server reads game_list.tsv from its working directory, so the tests run

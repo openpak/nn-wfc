@@ -1,10 +1,10 @@
 package qr2
 
 import (
+	"openpak/wfc-common/common"
 	"sort"
 	"strconv"
 	"time"
-	"wwfc/common"
 )
 
 type MiiInfo struct {

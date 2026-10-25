@@ -2,8 +2,8 @@ package serverbrowser
 
 import (
 	"fmt"
+	"openpak/wfc-common/filter"
 	"testing"
-	"wwfc/filter"
 )
 
 func parseFilter(t *testing.T, expression string) {

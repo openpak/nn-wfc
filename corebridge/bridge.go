@@ -22,8 +22,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
+	"openpak/wfc-common/logging"
 	accountv1 "wwfc/corebridge/accountpb"
-	"wwfc/logging"
 )
 
 // kinds are the events this family has no transport for. The list documents

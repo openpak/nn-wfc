@@ -7,8 +7,8 @@ import (
 	"bytes"
 	"fmt"
 	"math/big"
-	"wwfc/common"
-	"wwfc/logging"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/logging"
 )
 
 var (

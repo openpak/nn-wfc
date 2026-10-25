@@ -2,11 +2,11 @@ package gpcm
 
 import (
 	"encoding/gob"
+	"openpak/wfc-common/common"
+	"openpak/wfc-common/database"
+	"openpak/wfc-common/logging"
 	"os"
 	"strings"
-	"wwfc/common"
-	"wwfc/database"
-	"wwfc/logging"
 	"wwfc/qr2"
 
 	"github.com/linkdata/deadlock"
